@@ -63,3 +63,16 @@
   .nav-toggle{width:50px;height:44px;border-radius:13px;gap:6px}
   .nav-toggle span{width:23px;height:2px}
 }
+
+/* Food marquee polish */
+.food-marquee{border-top:1px solid rgba(200,155,92,.16);border-bottom:1px solid rgba(200,155,92,.16)}
+.food-marquee:hover .marquee-track{animation-play-state:paused}
+@media(max-width:820px){
+  .food-marquee{padding:26px 0}
+  .marquee-track{gap:16px;animation-duration:48s}
+  .marquee-track img{width:260px;height:170px;border-radius:22px}
+}
+@media(max-width:430px){
+  .food-marquee{padding:22px 0}
+  .marquee-track img{width:220px;height:145px;border-radius:18px}
+}
