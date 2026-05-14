@@ -127,6 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
       menuTabs.forEach(function (item) { item.classList.remove("active"); });
       tab.classList.add("active");
       currentFilter = tab.dataset.filter || "all";
+      if (menuSearch) menuSearch.value = "";
       render();
     });
   });
