@@ -5,7 +5,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const navToggle = document.querySelector(".nav-toggle");
   const menuRows = document.getElementById("menuRows");
   const menuSearch = document.getElementById("menuSearch");
-  const menuTabs = document.querySelectorAll(".menu-tab");
+  let menuTabs = document.querySelectorAll(".menu-tab");
+  let currentFilter = "all";
+  let autoSlideTimer;
 
   window.addEventListener("load", function () {
     setTimeout(function () {
@@ -19,8 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function updateScrollBar() {
     const current = document.documentElement.scrollTop || document.body.scrollTop;
     const total = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    const width = total > 0 ? (current / total) * 100 : 0;
-    if (scrollBar) scrollBar.style.width = width + "%";
+    if (scrollBar) scrollBar.style.width = (total > 0 ? (current / total) * 100 : 0) + "%";
     if (navbar) navbar.classList.toggle("scrolled", window.scrollY > 18);
   }
 
@@ -43,16 +44,18 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  const revealItems = document.querySelectorAll(".reveal");
-  const observer = new IntersectionObserver(function (entries) {
+  const revealObserver = new IntersectionObserver(function (entries) {
     entries.forEach(function (entry) {
       if (entry.isIntersecting) {
         entry.target.classList.add("show");
-        observer.unobserve(entry.target);
+        revealObserver.unobserve(entry.target);
       }
     });
   }, { threshold: 0.12 });
-  revealItems.forEach(function (item) { observer.observe(item); });
+
+  document.querySelectorAll(".reveal").forEach(function (item) {
+    revealObserver.observe(item);
+  });
 
   document.querySelectorAll(".counter").forEach(function (item) {
     const target = Number(item.dataset.target || 0);
@@ -70,68 +73,474 @@ document.addEventListener("DOMContentLoaded", function () {
     tick();
   });
 
-  const menuItems=[{cat:"sushi",code:"S1",name:"Sushi Menü 1",desc:"8 Kappa Maki, 8 Kappa Maki Gurke, 8 Avocado Maki",price:"9,90 €",tag:"Sushi",img:"https://tse1.mm.bing.net/th?q=S1+Sushi+Men%C3%BC+1+8+Kappa+Maki%2C+8+Kappa+Maki+Gurke%2C+8+Avocado+Maki+Sushi+sushi+maki+nigiri+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"sushi",code:"S2",name:"Sushi Menü 2",desc:"8 Kappa Maki Gurke, 8 Avocado Maki, 8 California Maki",price:"10,90 €",tag:"Sushi",img:"https://tse2.mm.bing.net/th?q=S2+Sushi+Men%C3%BC+2+8+Kappa+Maki+Gurke%2C+8+Avocado+Maki%2C+8+California+Maki+Sushi+sushi+maki+nigiri+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"sushi",code:"S3",name:"Sushi Menü 3",desc:"8 California Maki, 8 Avocado Maki",price:"9,90 €",tag:"Sushi",img:"https://tse3.mm.bing.net/th?q=S3+Sushi+Men%C3%BC+3+8+California+Maki%2C+8+Avocado+Maki+Sushi+sushi+maki+nigiri+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"sushi",code:"S4",name:"Sushi Menü 4",desc:"8 Kappa Maki, 8 Avocado Maki, 8 Gurke Maki",price:"9,90 €",tag:"Sushi",img:"https://tse4.mm.bing.net/th?q=S4+Sushi+Men%C3%BC+4+8+Kappa+Maki%2C+8+Avocado+Maki%2C+8+Gurke+Maki+Sushi+sushi+maki+nigiri+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"sushi",code:"S5",name:"Sushi Menü 5",desc:"2 Sake Nigiri, 8 Sake Maki, 8 Sake Inside-Out, Lachs ummantelt",price:"17,90 €",tag:"Lachs",img:"https://tse1.mm.bing.net/th?q=S5+Sushi+Men%C3%BC+5+2+Sake+Nigiri%2C+8+Sake+Maki%2C+8+Sake+Inside-Out%2C+Lachs+ummantelt+Lachs+sushi+maki+nigiri+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"sushi",code:"S6",name:"Sushi Menü 6",desc:"1 Ebi Nigiri, 8 Sake Maki, 8 Gurke Maki, 8 Sake Inside-Out",price:"15,90 €",tag:"Ebi",img:"https://tse2.mm.bing.net/th?q=S6+Sushi+Men%C3%BC+6+1+Ebi+Nigiri%2C+8+Sake+Maki%2C+8+Gurke+Maki%2C+8+Sake+Inside-Out+Ebi+sushi+maki+nigiri+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"sushi",code:"S7",name:"Sushi Menü 7",desc:"8 Sake Maki, 8 Sake Inside-Out, 8 California Inside-Out",price:"19,90 €",tag:"Inside-Out",img:"https://tse3.mm.bing.net/th?q=S7+Sushi+Men%C3%BC+7+8+Sake+Maki%2C+8+Sake+Inside-Out%2C+8+California+Inside-Out+Inside-Out+sushi+maki+nigiri+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"sushi",code:"S9",name:"Sushi Menü 9",desc:"2 Ebi Nigiri, 2 Sake Nigiri, 8 Sake Maki, 8 Inside-Out, 8 Kappa Maki",price:"25,90 €",tag:"Mix",img:"https://tse1.mm.bing.net/th?q=S9+Sushi+Men%C3%BC+9+2+Ebi+Nigiri%2C+2+Sake+Nigiri%2C+8+Sake+Maki%2C+8+Inside-Out%2C+8+Kappa+Maki+Mix+sushi+maki+nigiri+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"sushi",code:"S10",name:"Sushi Menü 10",desc:"6 Baked Sake Rolls, 8 Sake Maki, 6 Baked vegetarische Rolls",price:"27,90 €",tag:"Baked Rolls",img:"https://tse1.mm.bing.net/th?q=S10+Sushi+Men%C3%BC+10+6+Baked+Sake+Rolls%2C+8+Sake+Maki%2C+6+Baked+vegetarische+Rolls+Baked+Rolls+sushi+maki+nigiri+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"sushi",code:"S11",name:"Sushi Menü 11",desc:"8 vegetarisch Inside-Out, 8 Kappa Maki, 8 Mango Maki",price:"22,90 €",tag:"Vegetarisch",img:"https://tse2.mm.bing.net/th?q=S11+Sushi+Men%C3%BC+11+8+vegetarisch+Inside-Out%2C+8+Kappa+Maki%2C+8+Mango+Maki+Vegetarisch+sushi+maki+nigiri+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"vorspeisen",code:"V1",name:"Vietnamesische Frühlingsrollen",desc:"10 Stück",price:"4,90 €",tag:"Vorspeise",img:"https://tse4.mm.bing.net/th?q=V1+Vietnamesische+Fr%C3%BChlingsrollen+10+St%C3%BCck+Vorspeise+asian+appetizer+starter+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"vorspeisen",code:"V2",name:"Frühlingsrollen",desc:"2 Stück",price:"3,90 €",tag:"Knusprig",img:"https://tse1.mm.bing.net/th?q=V2+Fr%C3%BChlingsrollen+2+St%C3%BCck+Knusprig+asian+appetizer+starter+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"vorspeisen",code:"V3",name:"Pekingsuppe",desc:"Sauer-scharf 🌶",price:"3,90 €",tag:"Suppe",img:"https://tse2.mm.bing.net/th?q=V3+Pekingsuppe+Sauer-scharf+%F0%9F%8C%B6+Suppe+asian+appetizer+starter+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"vorspeisen",code:"V4",name:"Hühnersuppe",desc:"Mit Gemüse und Glasnudeln",price:"4,90 €",tag:"Suppe",img:"https://tse3.mm.bing.net/th?q=V4+H%C3%BChnersuppe+Mit+Gem%C3%BCse+und+Glasnudeln+Suppe+asian+appetizer+starter+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"vorspeisen",code:"V5",name:"Wonton Suppe",desc:"Scharf, mit Champignons und Sojasprossen 🌶",price:"4,90 €",tag:"Wonton",img:"https://tse4.mm.bing.net/th?q=V5+Wonton+Suppe+Scharf%2C+mit+Champignons+und+Sojasprossen+%F0%9F%8C%B6+Wonton+asian+appetizer+starter+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"vorspeisen",code:"V6",name:"Gemüsesuppe",desc:"Leichte Suppe mit Gemüse 🌿",price:"3,90 €",tag:"Vegetarisch",img:"https://tse1.mm.bing.net/th?q=V6+Gem%C3%BCsesuppe+Leichte+Suppe+mit+Gem%C3%BCse+%F0%9F%8C%BF+Vegetarisch+asian+appetizer+starter+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"hauptgerichte",code:"M1",name:"Gebratene Nudeln mit Hühnerfleisch",desc:"Gebratene Nudeln mit Hühnerfleisch",price:"6,90 €",tag:"Nudeln",img:"https://tse3.mm.bing.net/th?q=M1+Gebratene+Nudeln+mit+H%C3%BChnerfleisch+Gebratene+Nudeln+mit+H%C3%BChnerfleisch+Nudeln+asian+main+dish+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"hauptgerichte",code:"M2",name:"Gebratener Eierreis mit Ebi",desc:"Gebratener Eierreis mit Ebi",price:"8,90 €",tag:"Reis",img:"https://tse4.mm.bing.net/th?q=M2+Gebratener+Eierreis+mit+Ebi+Gebratener+Eierreis+mit+Ebi+Reis+asian+main+dish+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"hauptgerichte",code:"M5",name:"Gebratener Eierreis mit Ente",desc:"Gebratener Eierreis mit Ente",price:"12,90 €",tag:"Reis",img:"https://tse3.mm.bing.net/th?q=M5+Gebratener+Eierreis+mit+Ente+Gebratener+Eierreis+mit+Ente+Reis+asian+main+dish+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"hauptgerichte",code:"M10",name:"Gebratener Reis mit Ente",desc:"Gebratener Reis mit Ente",price:"12,90 €",tag:"Ente",img:"https://tse3.mm.bing.net/th?q=M10+Gebratener+Reis+mit+Ente+Gebratener+Reis+mit+Ente+Ente+asian+main+dish+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"hauptgerichte",code:"M11",name:"Gebratene Nudeln mit Ente",desc:"Gebratene Nudeln mit Ente",price:"12,90 €",tag:"Nudeln",img:"https://tse4.mm.bing.net/th?q=M11+Gebratene+Nudeln+mit+Ente+Gebratene+Nudeln+mit+Ente+Nudeln+asian+main+dish+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"hauptgerichte",code:"M12",name:"Gebratener Reis mit Ebi",desc:"Gebratener Reis mit Ebi",price:"12,90 €",tag:"Ebi",img:"https://tse1.mm.bing.net/th?q=M12+Gebratener+Reis+mit+Ebi+Gebratener+Reis+mit+Ebi+Ebi+asian+main+dish+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"hauptgerichte",code:"M3",name:"Hühnerfleisch mit Erdnusssoße",desc:"Hühnerfleisch mit Erdnusssoße",price:"12,90 €",tag:"Huhn",img:"https://tse1.mm.bing.net/th?q=M3+H%C3%BChnerfleisch+mit+Erdnussso%C3%9Fe+H%C3%BChnerfleisch+mit+Erdnussso%C3%9Fe+Huhn+asian+main+dish+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"hauptgerichte",code:"M4",name:"Ente knusprig süß-sauer",desc:"Ente knusprig süß-sauer",price:"12,90 €",tag:"Ente",img:"https://tse2.mm.bing.net/th?q=M4+Ente+knusprig+s%C3%BC%C3%9F-sauer+Ente+knusprig+s%C3%BC%C3%9F-sauer+Ente+asian+main+dish+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"hauptgerichte",code:"M7",name:"Gebackenes Hühnerfleisch",desc:"Gebackenes Hühnerfleisch",price:"11,90 €",tag:"Huhn",img:"https://tse1.mm.bing.net/th?q=M7+Gebackenes+H%C3%BChnerfleisch+Gebackenes+H%C3%BChnerfleisch+Huhn+asian+main+dish+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"hauptgerichte",code:"M8",name:"Rindfleisch Spezialität",desc:"Rindfleisch Spezialität",price:"11,90 €",tag:"Rind",img:"https://tse2.mm.bing.net/th?q=M8+Rindfleisch+Spezialit%C3%A4t+Rindfleisch+Spezialit%C3%A4t+Rind+asian+main+dish+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"hauptgerichte",code:"M9",name:"Gà xào sả ớt",desc:"Gà xào sả ớt 🌶",price:"12,90 €",tag:"Scharf",img:"https://tse3.mm.bing.net/th?q=M9+G%C3%A0+x%C3%A0o+s%E1%BA%A3+%E1%BB%9Bt+G%C3%A0+x%C3%A0o+s%E1%BA%A3+%E1%BB%9Bt+%F0%9F%8C%B6+Scharf+asian+main+dish+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"hauptgerichte",code:"M16",name:"Knusprige Ente",desc:"Knusprige Ente",price:"12,90 €",tag:"Ente",img:"https://tse1.mm.bing.net/th?q=M16+Knusprige+Ente+Knusprige+Ente+Ente+asian+main+dish+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"hauptgerichte",code:"M17",name:"Gebackenes Hühnerfleisch Spezial",desc:"Gebackenes Hühnerfleisch Spezial",price:"11,90 €",tag:"Huhn",img:"https://tse2.mm.bing.net/th?q=M17+Gebackenes+H%C3%BChnerfleisch+Spezial+Gebackenes+H%C3%BChnerfleisch+Spezial+Huhn+asian+main+dish+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"hauptgerichte",code:"M6",name:"Tofu Gemüse",desc:"Tofu Gemüse 🌿",price:"10,90 €",tag:"Vegetarisch",img:"https://tse4.mm.bing.net/th?q=M6+Tofu+Gem%C3%BCse+Tofu+Gem%C3%BCse+%F0%9F%8C%BF+Vegetarisch+asian+main+dish+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"hauptgerichte",code:"M13",name:"Gemüsepfanne",desc:"Gemüsepfanne 🌿",price:"9,90 €",tag:"Vegetarisch",img:"https://tse2.mm.bing.net/th?q=M13+Gem%C3%BCsepfanne+Gem%C3%BCsepfanne+%F0%9F%8C%BF+Vegetarisch+asian+main+dish+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"hauptgerichte",code:"M14",name:"Bami Goreng",desc:"Bami Goreng",price:"10,90 €",tag:"Nudeln",img:"https://tse3.mm.bing.net/th?q=M14+Bami+Goreng+Bami+Goreng+Nudeln+asian+main+dish+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"hauptgerichte",code:"M15",name:"Nasi Goreng",desc:"Nasi Goreng",price:"10,90 €",tag:"Reis",img:"https://tse4.mm.bing.net/th?q=M15+Nasi+Goreng+Nasi+Goreng+Reis+asian+main+dish+restaurant+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"box",code:"N1",name:"Gebackene Banane",desc:"Gebackene Banane",price:"3,50 €",tag:"Dessert",img:"https://tse4.mm.bing.net/th?q=N1+Gebackene+Banane+Gebackene+Banane+Dessert+asian+takeaway+lunch+box+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"box",code:"B1",name:"Gebackene Frühlingsrollen",desc:"Gebackene Frühlingsrollen 🌿",price:"7,90 €",tag:"Box",img:"https://tse4.mm.bing.net/th?q=B1+Gebackene+Fr%C3%BChlingsrollen+Gebackene+Fr%C3%BChlingsrollen+%F0%9F%8C%BF+Box+asian+takeaway+lunch+box+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"box",code:"B2",name:"Gà chiên giòn",desc:"Gà chiên giòn",price:"9,90 €",tag:"Box",img:"https://tse1.mm.bing.net/th?q=B2+G%C3%A0+chi%C3%AAn+gi%C3%B2n+G%C3%A0+chi%C3%AAn+gi%C3%B2n+Box+asian+takeaway+lunch+box+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"box",code:"B3",name:"Gà chiên giòn Erdnuss",desc:"Gà chiên giòn Erdnuss",price:"6,90 €",tag:"Box",img:"https://tse2.mm.bing.net/th?q=B3+G%C3%A0+chi%C3%AAn+gi%C3%B2n+Erdnuss+G%C3%A0+chi%C3%AAn+gi%C3%B2n+Erdnuss+Box+asian+takeaway+lunch+box+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"box",code:"B4",name:"Gebratene Nudeln Box",desc:"Gebratene Nudeln Box",price:"8,90 €",tag:"Box",img:"https://tse3.mm.bing.net/th?q=B4+Gebratene+Nudeln+Box+Gebratene+Nudeln+Box+Box+asian+takeaway+lunch+box+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"box",code:"B5",name:"Gebratener Reis Box",desc:"Gebratener Reis Box",price:"6,90 €",tag:"Box",img:"https://tse4.mm.bing.net/th?q=B5+Gebratener+Reis+Box+Gebratener+Reis+Box+Box+asian+takeaway+lunch+box+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"box",code:"B6",name:"Gebratene Nudeln Erdnuss",desc:"Gebratene Nudeln Erdnuss",price:"8,90 €",tag:"Box",img:"https://tse1.mm.bing.net/th?q=B6+Gebratene+Nudeln+Erdnuss+Gebratene+Nudeln+Erdnuss+Box+asian+takeaway+lunch+box+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"box",code:"B7",name:"Gebratene Nudeln Hühnerfleisch",desc:"Gebratene Nudeln Hühnerfleisch",price:"11,90 €",tag:"Box",img:"https://tse2.mm.bing.net/th?q=B7+Gebratene+Nudeln+H%C3%BChnerfleisch+Gebratene+Nudeln+H%C3%BChnerfleisch+Box+asian+takeaway+lunch+box+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"box",code:"B8",name:"Gebratene Nudeln Hühnerbrustfilet",desc:"Gebratene Nudeln Hühnerbrustfilet",price:"10,90 €",tag:"Box",img:"https://tse3.mm.bing.net/th?q=B8+Gebratene+Nudeln+H%C3%BChnerbrustfilet+Gebratene+Nudeln+H%C3%BChnerbrustfilet+Box+asian+takeaway+lunch+box+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"extras",code:"E1",name:"Süß-saure Sauce",desc:"Süß-saure Sauce",price:"2,00 €",tag:"Sauce",img:"https://tse3.mm.bing.net/th?q=E1+S%C3%BC%C3%9F-saure+Sauce+S%C3%BC%C3%9F-saure+Sauce+Sauce+asian+sauce+dessert+side+dish+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"extras",code:"E2",name:"Erdnuss Sauce",desc:"Erdnuss Sauce",price:"2,00 €",tag:"Sauce",img:"https://tse4.mm.bing.net/th?q=E2+Erdnuss+Sauce+Erdnuss+Sauce+Sauce+asian+sauce+dessert+side+dish+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"extras",code:"E7",name:"Wasabi Sauce",desc:"Wasabi Sauce",price:"0,50 €",tag:"Sauce",img:"https://tse1.mm.bing.net/th?q=E7+Wasabi+Sauce+Wasabi+Sauce+Sauce+asian+sauce+dessert+side+dish+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"extras",code:"E8",name:"Sriracha Sauce",desc:"Sriracha Sauce 🌶",price:"0,50 €",tag:"Sauce",img:"https://tse2.mm.bing.net/th?q=E8+Sriracha+Sauce+Sriracha+Sauce+%F0%9F%8C%B6+Sauce+asian+sauce+dessert+side+dish+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"extras",code:"E3",name:"Gebackene Banane",desc:"Gebackene Banane",price:"2,50 €",tag:"Dessert",img:"https://tse1.mm.bing.net/th?q=E3+Gebackene+Banane+Gebackene+Banane+Dessert+asian+sauce+dessert+side+dish+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"extras",code:"E4",name:"Gebackene Ananas",desc:"Gebackene Ananas",price:"2,50 €",tag:"Dessert",img:"https://tse2.mm.bing.net/th?q=E4+Gebackene+Ananas+Gebackene+Ananas+Dessert+asian+sauce+dessert+side+dish+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"extras",code:"E5",name:"Gebackene Lychee",desc:"Gebackene Lychee",price:"2,50 €",tag:"Dessert",img:"https://tse3.mm.bing.net/th?q=E5+Gebackene+Lychee+Gebackene+Lychee+Dessert+asian+sauce+dessert+side+dish+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"extras",code:"E6",name:"Gebackenes Eis",desc:"Gebackenes Eis",price:"2,50 €",tag:"Dessert",img:"https://tse4.mm.bing.net/th?q=E6+Gebackenes+Eis+Gebackenes+Eis+Dessert+asian+sauce+dessert+side+dish+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"extras",code:"E9",name:"Portion Ingwer",desc:"Portion Ingwer",price:"1,00 €",tag:"Extra",img:"https://tse3.mm.bing.net/th?q=E9+Portion+Ingwer+Portion+Ingwer+Extra+asian+sauce+dessert+side+dish+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"extras",code:"E10",name:"Portion Wasabi",desc:"Portion Wasabi",price:"1,00 €",tag:"Extra",img:"https://tse3.mm.bing.net/th?q=E10+Portion+Wasabi+Portion+Wasabi+Extra+asian+sauce+dessert+side+dish+food+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"getraenke",code:"G1",name:"Cola 0,5 l",desc:"Cola 0,5 l",price:"2,90 €",tag:"Getränk",img:"https://tse1.mm.bing.net/th?q=G1+Cola+0%2C5+l+Cola+0%2C5+l+Getr%C3%A4nk+drink+beverage+product+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"getraenke",code:"G2",name:"Cola Light 0,5 l",desc:"Cola Light 0,5 l",price:"2,90 €",tag:"Getränk",img:"https://tse2.mm.bing.net/th?q=G2+Cola+Light+0%2C5+l+Cola+Light+0%2C5+l+Getr%C3%A4nk+drink+beverage+product+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"getraenke",code:"G3",name:"Fanta 0,5 l",desc:"Fanta 0,5 l",price:"2,90 €",tag:"Getränk",img:"https://tse3.mm.bing.net/th?q=G3+Fanta+0%2C5+l+Fanta+0%2C5+l+Getr%C3%A4nk+drink+beverage+product+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"getraenke",code:"G4",name:"Sprite 0,5 l",desc:"Sprite 0,5 l",price:"2,90 €",tag:"Getränk",img:"https://tse4.mm.bing.net/th?q=G4+Sprite+0%2C5+l+Sprite+0%2C5+l+Getr%C3%A4nk+drink+beverage+product+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"getraenke",code:"G5",name:"Cola / Cola Light / Fanta / Sprite 0,33 l",desc:"Cola / Cola Light / Fanta / Sprite 0,33 l",price:"3,30 €",tag:"Getränk",img:"https://tse1.mm.bing.net/th?q=G5+Cola+%2F+Cola+Light+%2F+Fanta+%2F+Sprite+0%2C33+l+Cola+%2F+Cola+Light+%2F+Fanta+%2F+Sprite+0%2C33+l+Getr%C3%A4nk+drink+beverage+product+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"getraenke",code:"G6",name:"Red Bull",desc:"Red Bull Dose",price:"2,80 €",tag:"Getränk",img:"https://tse2.mm.bing.net/th?q=G6+Red+Bull+Red+Bull+Dose+Getr%C3%A4nk+drink+beverage+product+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"getraenke",code:"G7",name:"Mangosaft",desc:"Mangosaft",price:"2,90 €",tag:"Saft",img:"https://tse3.mm.bing.net/th?q=G7+Mangosaft+Mangosaft+Saft+drink+beverage+product+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"},{cat:"getraenke",code:"G8",name:"Lycheesaft",desc:"Lycheesaft",price:"2,90 €",tag:"Saft",img:"https://tse4.mm.bing.net/th?q=G8+Lycheesaft+Lycheesaft+Saft+drink+beverage+product+photo&w=700&h=460&c=7&rs=1&p=0&dpr=2&pid=ImgRaw"}];
-  const labels = { sushi: "Sushi Menüs", vorspeisen: "Vorspeisen", hauptgerichte: "Hauptgerichte", box: "Box To Go", extras: "Extras & Saucen", getraenke: "Getränke" };
-  let currentFilter = "all";
+  const categoryLabels = {
+    vorspeisen: "Vorspeisen",
+    hauptgerichte: "Hauptgerichte",
+    nachtisch: "Nachtisch",
+    box: "Box To Go",
+    sushi_maki: "Sushi Maki",
+    sushi_roll: "Sushi Spezial Roll",
+    baked_sushi: "Gebackene Sushi Roll",
+    sushi_menus: "Sushi Menüs",
+    extra_saucen: "Extra Saucen",
+    extra: "Extra",
+    milchtee: "Milchtee",
+    bubble_tea: "Bubble Tea",
+    frappe: "Frappé",
+    toppings: "Toppings"
+  };
+
+  const categoryTags = {
+    vorspeisen: "Starter",
+    hauptgerichte: "Wok",
+    nachtisch: "Dessert",
+    box: "To Go",
+    sushi_maki: "Maki",
+    sushi_roll: "Inside-Out",
+    baked_sushi: "Baked",
+    sushi_menus: "Menü",
+    extra_saucen: "Sauce",
+    extra: "Extra",
+    milchtee: "Milchtee",
+    bubble_tea: "Eistee",
+    frappe: "Frappé",
+    toppings: "+1€"
+  };
+
+  function imageFor(id, text, name, desc) {
+    const hash = Array.from(id).reduce(function (sum, char) {
+      return sum + char.charCodeAt(0);
+    }, 0);
+    const category = id.split("-")[0];
+    const imageOverrides = {
+      "nachtisch-N1": "fried banana with honey dessert on white plate asian restaurant close up",
+      "box-B2": "fried noodles with spring rolls asian take away box real food photo",
+      "extra_saucen-ES1": "two small bowls asian sweet sour sauce and spicy chili sauce close up",
+      "extra_saucen-ES5": "single broken fortune cookie with paper fortune on white plate close up",
+      "extra-E1": "pickled sushi ginger portion in small dish close up",
+      "extra-E2": "wasabi paste portion in small dish sushi restaurant close up",
+      "sushi_menus-S1": "sushi platter avocado maki cucumber maki mango maki 24 pieces real photo",
+      "sushi_menus-S2": "sushi platter cucumber maki salmon maki avocado maki real photo",
+      "sushi_menus-S3": "california maki cucumber maki avocado maki sushi platter real photo",
+      "sushi_menus-S4": "paprika maki avocado maki cucumber maki vegetarian sushi platter real photo",
+      "sushi_menus-S5": "salmon nigiri salmon maki salmon inside out sushi platter real photo",
+      "sushi_menus-S6": "ebi nigiri salmon nigiri cucumber maki california inside out sushi platter real photo",
+      "sushi_menus-S7": "salmon inside out california inside out cucumber maki sushi platter real photo",
+      "sushi_menus-S8": "vegetarian sushi platter cucumber maki mango maki inside out sesame real photo",
+      "sushi_menus-S9": "large sushi platter ebi nigiri salmon nigiri baked salmon roll california maki real photo",
+      "sushi_menus-S10": "baked sushi rolls platter salmon ebi vegetarian crispy sushi real photo",
+      "sushi_menus-S11": "vegetarian sushi platter baked rolls inside out cucumber mango maki real photo",
+      "milchtee-1": "brown sugar milk tea with tapioca pearls cup real photo",
+      "milchtee-2": "matcha milk tea bubble tea cup tapioca pearls real photo",
+      "milchtee-3": "classic pearl milk tea boba cup real photo",
+      "milchtee-4": "taro milk tea bubble tea purple cup real photo",
+      "milchtee-5": "strawberry milk tea bubble tea cup real photo",
+      "milchtee-6": "mango milk tea bubble tea cup real photo",
+      "milchtee-7": "peach milk tea bubble tea cup real photo",
+      "milchtee-8": "watermelon milk tea bubble tea cup real photo",
+      "milchtee-9": "passion fruit maracuja milk tea bubble tea cup yellow drink real photo",
+      "bubble_tea-10": "strawberry fruit iced tea bubble tea cup real photo",
+      "bubble_tea-11": "peach fruit iced tea bubble tea cup real photo",
+      "bubble_tea-12": "watermelon fruit iced tea bubble tea cup real photo",
+      "bubble_tea-13": "mango fruit iced tea bubble tea cup real photo",
+      "frappe-14": "strawberry frappe bubble tea cup whipped ice real photo",
+      "frappe-15": "mango frappe bubble tea cup whipped ice real photo",
+      "toppings-T8": "cherry popping boba bubble tea topping red pearls close up"
+    };
+    const imageHints = {
+      vorspeisen: "asian appetizer close up plated dish",
+      hauptgerichte: "asian wok dish close up plated meal",
+      nachtisch: "asian dessert close up plated",
+      box: "asian takeaway box noodles rice close up",
+      extra_saucen: "asian sauce side dish bowl close up",
+      sushi_maki: "sushi maki rolls close up",
+      sushi_roll: "inside out sushi roll close up",
+      baked_sushi: "crispy baked sushi roll close up",
+      sushi_menus: "sushi platter maki nigiri rolls close up",
+      extra: "sushi condiment ginger wasabi close up",
+      milchtee: "bubble milk tea cup close up",
+      bubble_tea: "fruit iced bubble tea cup close up",
+      frappe: "fruit frappe bubble tea cup close up",
+      toppings: "bubble tea popping boba topping close up"
+    };
+    const dishQuery = [imageOverrides[id] || text, name, desc, imageHints[category], "restaurant food real photo centered full dish"]
+      .filter(Boolean)
+      .join(" ")
+      .replace(/\s+/g, " ")
+      .trim();
+    const query = encodeURIComponent(dishQuery);
+    const host = "tse" + ((hash % 4) + 1) + ".mm.bing.net";
+    return `https://${host}/th?q=${query}&w=900&h=620&c=7&rs=1&p=${hash % 9}&o=5&pid=1.7`;
+  }
+
+  const menuItems = [
+    item("vorspeisen", "V1", "Vegetarische Mini-Frühlingsrollen (10 Stück)", "", "4,90 €", "vegetarian mini spring rolls asian appetizer"),
+    item("vorspeisen", "V2", "Frühlingsrollen (2 Stück)", "gefüllt mit Hackfleisch, Gemüse", "4,90 €", "fried spring rolls minced meat vegetables"),
+    item("vorspeisen", "V3", "Pekingsuppe (sauer-scharf) 🌶", "", "3,90 €", "peking soup hot sour asian soup"),
+    item("vorspeisen", "V4", "Thai-Suppe 🌶", "mit Kokosmilch, Garnelen, Champignon und Gemüse", "5,90 €", "thai coconut shrimp soup"),
+    item("vorspeisen", "V5", "Wantan-Suppe", "mit Champignon und Sojasprossen", "4,90 €", "wonton soup asian"),
+    item("vorspeisen", "V6", "Gemüsesuppe 🌿", "", "3,90 €", "vegetable soup asian"),
+
+    item("hauptgerichte", "M1", "Gebratene Nudeln mit...", "", null, "fried noodles asian wok", [
+      opt("a", "Sojasprossen, Ei", "6,90 €"),
+      opt("b", "Hühnerfleisch, Sojasprossen, Ei", "8,90 €"),
+      opt("c", "Rindfleisch, Sojasprossen, Ei", "10,90 €"),
+      opt("d", "Garnelen, Gemüse, Ei", "12,90 €")
+    ]),
+    item("hauptgerichte", "M2", "Gebratener Reis mit...", "", null, "fried rice asian wok", [
+      opt("a", "Sojasprossen, Ei", "6,90 €"),
+      opt("b", "Hühnerfleisch, Sojasprossen, Ei", "8,90 €"),
+      opt("c", "Rindfleisch, Sojasprossen, Ei", "10,90 €"),
+      opt("d", "Garnelen, Gemüse, Ei", "12,90 €")
+    ]),
+    item("hauptgerichte", "M3", "Hühnerbrust paniert", "mit Ei und Sojasprossen, dazu Nudeln und Soße nach Wahl...", "11,90 €", "breaded chicken noodles asian", sauceOptions(["Süß-saure Soße", "Pikante Soße 🌶", "Curry 🌶 oder Erdnusssoße"], "11,90 €")),
+    item("hauptgerichte", "M4", "Ente knusprig", "mit Gemüse, dazu Reis und Soße nach Wahl...", "12,90 €", "crispy duck rice asian", sauceOptions(["Süß-saure Soße", "Pikante Soße 🌶", "Curry 🌶 oder Erdnusssoße", "Mangosoße"], "12,90 €")),
+    item("hauptgerichte", "M5", "Garnelen gebacken", "mit Ei und Sojasprossen, dazu Nudeln und Soße nach Wahl...", "12,90 €", "baked shrimp noodles asian", sauceOptions(["Süß-saure Soße", "Pikante Soße 🌶", "Curry 🌶 oder Erdnusssoße", "Mangosoße"], "12,90 €")),
+    item("hauptgerichte", "M6", "Tofu mit versch. Gemüse 🌿", "dazu Reis und Soße nach Wahl...", "10,90 €", "tofu vegetables rice asian", sauceOptions(["Süß-saure Soße", "Pikante Soße 🌶", "Currysoße 🌶", "Mangosoße"], "10,90 €")),
+    item("hauptgerichte", "M7", "Hühnerfleisch Spezialitäten", "dazu Reis...", "10,90 €", "chicken vegetables rice asian", [
+      opt("a", "mit Gemüse und Süß-saure Soße", "10,90 €"),
+      opt("b", "mit versch. Gemüse und pikanter Soße 🌶", "10,90 €"),
+      opt("c", "mit Thai-Curry 🌶 (Kokosmilch, Zitronengras, Gemüse)", "10,90 €"),
+      opt("d", "mit Gemüse und Mangosoße", "10,90 €")
+    ]),
+    item("hauptgerichte", "M8", "Rindfleisch Spezialität", "dazu Reis...", "11,90 €", "beef vegetables rice asian", [
+      opt("a", "mit frischem Gemüse und süß-saure Soße", "11,90 €"),
+      opt("b", "mit versch. Gemüse und pikanter Soße 🌶", "11,90 €"),
+      opt("c", "mit Gemüse und Currysoße 🌶", "11,90 €")
+    ]),
+    item("hauptgerichte", "M9", "Garnelen gebraten", "mit Gemüse, dazu Reis und Soße nach Wahl...", "12,90 €", "fried shrimp vegetables rice asian", sauceOptions(["Süß-saure Soße", "Pikante Soße 🌶", "Currysoße 🌶"], "12,90 €")),
+    item("hauptgerichte", "M10", "Garnelen, Rind-, Hühnerfleisch", "mit frischem Gemüse, Champignons und pikanter Soße 🌶 (dazu Reis)", "12,90 €", "shrimp beef chicken vegetables asian wok"),
+    item("hauptgerichte", "M11", "Gebratener Reis", "mit Ei und Sojasprossen", null, "fried rice crispy chicken duck asian", [
+      opt("a", "mit gebackenem Hühnerfleisch", "10,90 €"),
+      opt("b", "mit knuspriger Ente", "12,90 €")
+    ]),
+    item("hauptgerichte", "M12", "Sparmenü", "", "11,90 €", "asian lunch menu spring rolls noodles softdrink", null, ["Frühlingsrollen", "Gebr. Nudeln mit Hühnerfleisch", "1x Softdrink"]),
+    item("hauptgerichte", "M13", "Gemüsepfanne 🌿", "mit Soße nach Wahl, dazu Reis", "9,90 €", "vegetable stir fry rice asian", sauceOptions(["Süß-saure Soße", "Pikante Soße 🌶", "Currysoße 🌶"], "9,90 €")),
+    item("hauptgerichte", "M14", "Bami-Goreng", "Gebratene Nudeln mit Hühnerfleisch, Krabben, Sojasprossen, Ei", "10,90 €", "bami goreng fried noodles"),
+    item("hauptgerichte", "M15", "Nasi-Goreng", "Gebratener Reis mit Hühnerfleisch, Krabben, Sojasprossen, Ei", "10,90 €", "nasi goreng fried rice"),
+    item("hauptgerichte", "M16", "Knusprige Ente", "mit Reis, Gemüse und Soße nach Wahl...", "12,90 €", "crispy duck mango sauce rice asian", sauceOptions(["Süß-saure Soße", "Chop-Suey Soße", "Curry 🌶 oder Erdnusssoße", "Mangosoße"], "12,90 €")),
+    item("hauptgerichte", "M17", "Gebackenes Hühnerfleisch", "mit Reis und Soße nach Wahl...", "11,90 €", "baked chicken rice asian", sauceOptions(["Süß-saure Soße", "Chop-Suey Soße", "Curry 🌶 oder Erdnusssoße", "Mangosoße"], "11,90 €")),
+
+    item("nachtisch", "N1", "Gebackene Banane (5 Stück)", "mit Honig", "3,50 €", "fried banana honey dessert"),
+
+    item("box", "B1", "Gebratene Nudeln", "mit vegetarischen Frühlingsrollen (5 Stk.)", "7,90 €", "fried noodles vegetarian spring rolls box"),
+    item("box", "B2", "Gebratene Nudeln", "mit Frühlingsrollen (2 Stk.)", "9,90 €", "fried noodles spring rolls box"),
+    item("box", "B3", "Gebratene Nudeln", "mit Sojasprossen und Ei", "6,90 €", "fried noodles egg sprouts box"),
+    item("box", "B4", "Gebratene Nudeln", "mit Hühnerfleisch, Sojasprossen und Ei", "8,90 €", "fried noodles chicken box"),
+    item("box", "B5", "Gebratener Reis", "mit Sojasprossen und Ei", "6,90 €", "fried rice egg sprouts box"),
+    item("box", "B6", "Gebratener Reis", "mit Hühnerfleisch, Sojasprossen und Ei", "8,90 €", "fried rice chicken box"),
+    item("box", "B7", "Gebratene Nudeln", "mit knuspriger Ente, Sojasprossen und Ei", "11,90 €", "fried noodles crispy duck box"),
+    item("box", "B8", "Gebratene Nudeln", "mit gebackenem Hühnerbrustfilet, Sojasprossen und Ei", "10,90 €", "fried noodles baked chicken box"),
+
+    item("extra_saucen", "ES1", "süß-saure Sauce / pikante Sauce", "", "2,00 €", "asian sweet sour sauce"),
+    item("extra_saucen", "ES2", "Curry-, Erdnuss- oder Mangosauce", "", "2,50 €", "asian curry peanut mango sauce"),
+    item("extra_saucen", "ES3", "gekochter Reis", "", null, "steamed rice bowl", [opt("klein", "gekochter Reis", "2,00 €"), opt("groß", "gekochter Reis", "2,50 €")]),
+    item("extra_saucen", "ES4", "gebackene Asia Krupuk", "", "2,50 €", "asia krupuk crackers"),
+    item("extra_saucen", "ES5", "Glückskeks", "", "0,50 €", "fortune cookie"),
+    item("extra_saucen", "ES6", "Sambal Olek 🌶", "", "0,50 €", "sambal oelek chili sauce"),
+
+    item("sushi_maki", "M1", "24 Avocado Maki", "", "10,90 €", "avocado maki sushi"),
+    item("sushi_maki", "M2", "24 Gurken Maki", "", "9,90 €", "cucumber maki sushi"),
+    item("sushi_maki", "M3", "24 Mango Maki", "", "9,90 €", "mango maki sushi"),
+    item("sushi_maki", "M4", "24 Paprika Maki", "", "9,90 €", "paprika maki sushi"),
+    item("sushi_maki", "M5", "24 Lachs Maki", "", "12,90 €", "salmon maki sushi"),
+    item("sushi_maki", "M6", "24 California Maki", "", "9,90 €", "california maki sushi"),
+
+    item("sushi_roll", "R1", "Ebi Inside-Out", "Garnelen, Gurke, und Sesam ummantelt", "10,90 €", "ebi inside out sushi roll"),
+    item("sushi_roll", "R2", "Sake Inside-Out", "Lachs, Gurke, und Sesam ummantelt", "10,90 €", "sake inside out sushi roll"),
+    item("sushi_roll", "R3", "Alaska Inside-Out", "Lachs, Gurke, Masago und Sesam ummantelt", "10,90 €", "alaska inside out sushi roll"),
+    item("sushi_roll", "R4", "California Inside-Out", "Krebsfleischimitat, Avocado und Sesam ummantelt", "9,90 €", "california inside out sushi"),
+    item("sushi_roll", "R5", "California Inside-Out", "Krebsfleischimitat, Avocado, Masago u. Lachs ummantelt", "10,90 €", "california salmon masago inside out sushi"),
+    item("sushi_roll", "R6", "Vegetarische Roll", "Gurke, Avocado, Mango und Sesam ummantelt", "8,90 €", "vegetarian inside out sushi roll"),
+
+    item("baked_sushi", "B1", "Vegetarische Roll", "Gurke, Avocado, Mango und Frischkäse", "8,90 €", "baked vegetarian sushi roll"),
+    item("baked_sushi", "B2", "Sake Roll", "Lachs, Gurke, Avocado und Frischkäse", "10,90 €", "baked sake salmon sushi roll"),
+    item("baked_sushi", "B3", "Ebi Roll", "panierte Garnelen, Gurke, Avocado und Frischkäse", "10,90 €", "baked ebi shrimp sushi roll"),
+    item("baked_sushi", "B4", "Yakitori Roll", "gebackenes Hühnerfleisch, Gurke und Frischkäse", "10,90 €", "baked chicken yakitori sushi roll"),
+
+    sushiMenu("S1", "Sushi Menü 1", "9,90 €", ["8 Avocado Maki", "8 Kappa Maki (Gurke)", "8 Mango Maki"]),
+    sushiMenu("S2", "Sushi Menü 2", "10,90 €", ["8 Kappa Maki (Gurke)", "8 Lachs Maki", "8 Avocado Maki"]),
+    sushiMenu("S3", "Sushi Menü 3", "9,90 €", ["8 California Maki", "8 Gurke Maki", "8 Avocado Maki"]),
+    sushiMenu("S4", "Sushi Menü 4", "9,90 €", ["8 Paprika Maki", "8 Avocado Maki", "8 Gurke Maki"]),
+    sushiMenu("S5", "Sushi Menü 5", "17,90 €", ["2 Sake Nigiri", "8 Sake Maki", "8 Sake Inside-Out (Lachs ummantelt)"]),
+    sushiMenu("S6", "Sushi Menü 6", "15,90 €", ["1 Ebi Nigiri", "1 Sake Nigiri", "8 Gurke Maki", "8 California Inside-Out (Lachs ummantelt)"]),
+    sushiMenu("S7", "Sushi Menü 7", "19,90 €", ["8 Gurke Maki", "8 Sake Inside-Out (Lachs ummantelt)", "8 California Inside-Out (Lachs ummantelt)"]),
+    sushiMenu("S8", "Sushi Menü 8 (vegetarisch)", "13,90 €", ["8 Kappa Maki (Gurke)", "8 Mango Maki", "8 Inside-Out (Sesam ummantelt)"]),
+    sushiMenu("S9", "Sushi Menü 9", "25,90 €", ["2 Ebi Nigiri", "2 Sake Nigiri", "6 Baked Sake Rolls", "8 California Inside-Out (Sesam ummantelt)", "8 Kappa Maki"]),
+    sushiMenu("S10", "Sushi Menü 10", "27,90 €", ["6 Baked Sake Rolls", "6 Baked Ebi Rolls", "6 Baked vegetarische Rolls"]),
+    sushiMenu("S11", "Sushi Menü 11 (vegetarisch)", "22,90 €", ["6 Baked Rolls", "8 Vegetarisch Inside-Out (Sesam ummantelt)", "8 Kappa Maki", "8 Mango Maki"]),
+
+    item("extra", "E1", "Portion Ingwer", "", "1,00 €", "sushi ginger"),
+    item("extra", "E2", "Portion Wasabi", "", "1,00 €", "wasabi portion"),
+
+    drink("milchtee", "1", "Brownsugar Milchtee", "brown sugar milk tea boba", [["700ml", "5,00 €"], ["500ml", "4,50 €"]]),
+    drink("milchtee", "2", "Matcha Milchtee", "matcha milk tea boba", [["700ml", "5,00 €"], ["500ml", "4,50 €"]]),
+    drink("milchtee", "3", "Perlen Milchtee", "pearl milk tea boba", [["700ml", "5,00 €"], ["500ml", "4,50 €"]]),
+    drink("milchtee", "4", "Taro Milchtee", "taro milk tea boba", [["700ml", "5,00 €"], ["500ml", "4,50 €"]]),
+    drink("milchtee", "5", "Erdbeere Milchtee", "strawberry milk tea boba", [["700ml", "5,00 €"], ["500ml", "4,50 €"]]),
+    drink("milchtee", "6", "Mango Milchtee", "mango milk tea boba", [["700ml", "5,00 €"], ["500ml", "4,50 €"]]),
+    drink("milchtee", "7", "Pfirsich Milchtee", "peach milk tea boba", [["700ml", "5,00 €"], ["500ml", "4,50 €"]]),
+    drink("milchtee", "8", "Wassermelone Milchtee", "watermelon milk tea boba", [["700ml", "5,00 €"], ["500ml", "4,50 €"]]),
+    drink("milchtee", "9", "Maracuja Milchtee", "passion fruit milk tea boba", [["700ml", "5,00 €"], ["500ml", "4,50 €"]]),
+
+    drink("bubble_tea", "10", "Erdbeere Eistee", "strawberry iced tea boba", [["700ml", "5,00 €"], ["500ml", "4,50 €"]]),
+    drink("bubble_tea", "11", "Pfirsich Eistee", "peach iced tea boba", [["700ml", "5,00 €"], ["500ml", "4,50 €"]]),
+    drink("bubble_tea", "12", "Wassermelone Eistee", "watermelon iced tea boba", [["700ml", "5,00 €"], ["500ml", "4,50 €"]]),
+    drink("bubble_tea", "13", "Mango Eistee", "mango iced tea boba", [["700ml", "5,00 €"], ["500ml", "4,50 €"]]),
+
+    drink("frappe", "14", "Erdbeere Frappé", "strawberry frappe bubble tea", [["700ml", "5,50 €"], ["500ml", "5,00 €"]]),
+    drink("frappe", "15", "Mango Frappé", "mango frappe bubble tea", [["700ml", "5,50 €"], ["500ml", "5,00 €"]]),
+
+    topping("T1", "Erdbeere Boba"),
+    topping("T2", "Mango Boba"),
+    topping("T3", "Pfirsich Boba"),
+    topping("T4", "Maracuja Boba"),
+    topping("T5", "Wassermelone Boba"),
+    topping("T6", "Apfel Boba"),
+    topping("T7", "Litchi Boba"),
+    topping("T8", "Kirsche Boba"),
+    topping("T9", "Tapioka Perlen"),
+    topping("T10", "Hantien Perlen"),
+    topping("T11", "Früchte Gelee")
+  ];
+
+  function item(cat, code, name, desc, price, imageText, options, bullets) {
+    return {
+      id: cat + "-" + code,
+      cat,
+      code,
+      name,
+      desc,
+      price,
+      tag: categoryTags[cat],
+      img: imageFor(cat + "-" + code, imageText || name, name, desc),
+      options: options || [],
+      bullets: bullets || []
+    };
+  }
+
+  function opt(label, text, price) {
+    return { label, text, price };
+  }
+
+  function sauceOptions(names, price) {
+    return names.map(function (name, index) {
+      return opt(String.fromCharCode(97 + index), name, price);
+    });
+  }
+
+  function sushiMenu(code, name, price, bullets) {
+    return item("sushi_menus", code, name, "", price, name + " sushi platter", null, bullets);
+  }
+
+  function drink(cat, code, name, imageText, sizes) {
+    return {
+      id: cat + "-" + code,
+      cat,
+      code,
+      name,
+      desc: "Mit Topping nach Wahl (+1€)",
+      price: null,
+      tag: categoryTags[cat],
+      img: imageFor(cat + "-" + code, imageText, name, "bubble tea size 500ml 700ml"),
+      sizes: sizes.map(function (size) {
+        return { label: size[0], price: size[1] };
+      }),
+      options: [],
+      bullets: ["Toppings: Boba, Tapioka Perlen, Hantien Perlen oder Früchte Gelee (+1€)"]
+    };
+  }
+
+  function topping(code, name) {
+    return item("toppings", code, name, "Topping für Bubble Tea / Milchtee / Frappé", "+1,00 €", name + " bubble tea topping");
+  }
 
   function escapeHtml(value) {
-    return String(value).replace(/[&<>"']/g, function (char) {
+    return String(value || "").replace(/[&<>"']/g, function (char) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[char];
     });
   }
 
   function fallbackImage(name) {
-    return "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='460' viewBox='0 0 700 460'%3E%3Crect width='700' height='460' fill='%23f8f3ea'/%3E%3Ccircle cx='350' cy='170' r='76' fill='%23d8b47a' opacity='0.35'/%3E%3Ctext x='350' y='285' font-family='Georgia' font-size='34' text-anchor='middle' fill='%239a6a32'%3E" + encodeURIComponent(name) + "%3C/text%3E%3C/svg%3E";
+    const query = encodeURIComponent(`${name} asian restaurant food real photo centered dish`);
+    return `https://tse3.mm.bing.net/th?q=${query}&w=900&h=620&c=7&rs=1&p=7&o=5&pid=1.7`;
   }
   window.fallbackImage = fallbackImage;
 
-  function card(item, index) {
-    const safeName = escapeHtml(item.name);
-    const safeDesc = escapeHtml(item.desc);
-    const safeCode = escapeHtml(item.code);
-    const safeTag = escapeHtml(item.tag);
-    const safePrice = escapeHtml(item.price);
-    const safeImg = escapeHtml(item.img);
-    const fallbackName = item.name.replace(/'/g, "");
-    return `<article class="food-card" data-cat="${escapeHtml(item.cat)}" style="animation-delay:${Math.min(0.035 * index, 0.45)}s"><div class="food-img-wrap"><img class="food-img" src="${safeImg}" alt="${safeName}" loading="lazy" onerror="this.onerror=null;this.src=fallbackImage('${escapeHtml(fallbackName)}')"></div><div class="food-price">${safePrice}</div><div class="food-content"><div class="food-code">${safeCode} · ${safeTag}</div><h3 class="food-name">${safeName}</h3><p class="food-desc">${safeDesc}</p><button class="food-badge" type="button">Ansehen</button></div></article>`;
+  function optionsHtml(item) {
+    if (item.sizes && item.sizes.length) {
+      return `<div class="size-list">${item.sizes.map(function (size) {
+        return `<div class="size-row"><span>${escapeHtml(size.label)}</span><span class="size-price">${escapeHtml(size.price)}</span></div>`;
+      }).join("")}</div>`;
+    }
+
+    if (item.options && item.options.length) {
+      return `<div class="option-list">${item.options.map(function (option) {
+        return `<div class="option-row"><span><strong>${escapeHtml(option.label)}.</strong> ${escapeHtml(option.text)}</span><span class="option-price">${escapeHtml(option.price)}</span></div>`;
+      }).join("")}</div>`;
+    }
+
+    return "";
   }
 
-  function render() {
+  function bulletsHtml(item) {
+    if (!item.bullets || !item.bullets.length) return "";
+    return `<ul class="bullet-list">${item.bullets.map(function (line) {
+      return `<li>${escapeHtml(line)}</li>`;
+    }).join("")}</ul>`;
+  }
+
+  function card(item, index) {
+    const fallbackName = item.name.replace(/'/g, "");
+    const isSimple = !item.options?.length && !item.sizes?.length && !item.bullets?.length;
+    return `
+      <article class="food-card ${isSimple ? "is-simple" : ""} reveal" data-cat="${escapeHtml(item.cat)}" style="animation-delay:${Math.min(0.035 * index, 0.45)}s">
+        <div class="food-img-wrap">
+          <img class="food-img" src="${escapeHtml(item.img)}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.onerror=null;this.src=fallbackImage('${escapeHtml(fallbackName)}')">
+        </div>
+        <div class="food-content">
+          <div class="food-heading">
+            <span class="food-code">${escapeHtml(item.code)}</span>
+            <h3 class="food-name">${escapeHtml(item.name)}</h3>
+          </div>
+          ${item.desc ? `<p class="food-desc">${escapeHtml(item.desc)}</p>` : ""}
+          ${optionsHtml(item)}
+          ${bulletsHtml(item)}
+          <div class="food-meta"><span class="food-tag">${escapeHtml(item.tag)}</span></div>
+          ${item.price ? `<div class="food-price">${escapeHtml(item.price)}</div>` : ""}
+        </div>
+      </article>
+    `;
+  }
+
+  function renderTabs() {
+    const toolbar = document.querySelector(".menu-toolbar");
+    if (!toolbar) return;
+    toolbar.innerHTML = `<button class="menu-tab active" data-filter="all">Alle</button>` + Object.keys(categoryLabels).map(function (cat) {
+      return `<button class="menu-tab" data-filter="${cat}">${categoryLabels[cat]}</button>`;
+    }).join("");
+    menuTabs = document.querySelectorAll(".menu-tab");
+    bindTabs();
+  }
+
+  function renderMenu() {
     if (!menuRows) return;
     const query = (menuSearch ? menuSearch.value : "").toLowerCase().trim();
     const filtered = menuItems.filter(function (item) {
-      const haystack = (item.code + " " + item.name + " " + item.desc + " " + item.tag).toLowerCase();
+      const options = (item.options || []).map(function (option) { return option.label + " " + option.text + " " + option.price; }).join(" ");
+      const sizes = (item.sizes || []).map(function (size) { return size.label + " " + size.price; }).join(" ");
+      const bullets = (item.bullets || []).join(" ");
+      const haystack = `${item.code} ${item.name} ${item.desc} ${item.price || ""} ${item.tag} ${options} ${sizes} ${bullets}`.toLowerCase();
       return (currentFilter === "all" || item.cat === currentFilter) && haystack.includes(query);
     });
-    const cats = currentFilter === "all" ? Object.keys(labels) : [currentFilter];
+
+    const cats = currentFilter === "all" ? Object.keys(categoryLabels) : [currentFilter];
     menuRows.innerHTML = cats.map(function (cat) {
       const rowItems = filtered.filter(function (item) { return item.cat === cat; });
       if (!rowItems.length) return "";
-      return `<div class="menu-row-block" data-category="${cat}"><div class="row-title"><h3>${labels[cat]}</h3><span>${rowItems.length} Gerichte</span></div><div class="wave-stage"><div class="wave-menu-track">${rowItems.map(card).join("")}</div></div></div>`;
+      return `
+        <div class="menu-row-block ${rowItems.length <= 3 ? "is-compact" : ""}" data-category="${cat}">
+          <div class="row-title">
+            <h3>${categoryLabels[cat]}</h3>
+            <span>${rowItems.length} Positionen</span>
+          </div>
+          <div class="wave-stage">
+            <div class="wave-menu-track">${rowItems.map(card).join("")}</div>
+          </div>
+        </div>
+      `;
     }).join("") || '<div class="section-head"><p>Keine Gerichte gefunden.</p></div>';
-    setupMenu();
+
+    document.querySelectorAll("#menuRows .reveal").forEach(function (item) {
+      requestAnimationFrame(function () { item.classList.add("show"); });
+    });
   }
 
-  function setupMenu() {
-    document.querySelectorAll(".food-img,.food-badge").forEach(function (item) {
-      item.addEventListener("click", function () {
-        const cardElement = item.closest(".food-card");
-        const image = cardElement ? cardElement.querySelector(".food-img") : null;
-        if (image) openLightbox(image.src, image.alt);
+  function bindTabs() {
+    menuTabs.forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        menuTabs.forEach(function (item) { item.classList.remove("active"); });
+        tab.classList.add("active");
+        currentFilter = tab.dataset.filter || "all";
+        if (menuSearch) menuSearch.value = "";
+        renderMenu();
       });
     });
   }
 
-  menuTabs.forEach(function (tab) {
-    tab.addEventListener("click", function () {
-      menuTabs.forEach(function (item) { item.classList.remove("active"); });
-      tab.classList.add("active");
-      currentFilter = tab.dataset.filter || "all";
-      if (menuSearch) menuSearch.value = "";
-      render();
+  function setupMenuRows() {
+    document.querySelectorAll(".menu-row-block").forEach(function (block) {
+      const track = block.querySelector(".wave-menu-track");
+      if (!track) return;
+      block.querySelector(".slide-left")?.addEventListener("click", function () {
+        slideTrack(track, -1);
+      });
+      block.querySelector(".slide-right")?.addEventListener("click", function () {
+        slideTrack(track, 1);
+      });
+      track.addEventListener("scroll", function () {
+        updateActiveCard(track);
+      }, { passive: true });
+      updateTrackAlignment(track);
+      updateActiveCard(track);
+    });
+  }
+
+  function updateTrackAlignment(track) {
+    track.classList.remove("is-centered");
+    track.classList.toggle("is-centered", track.scrollWidth <= track.clientWidth + 8);
+  }
+
+  function updateActiveCard(track) {
+    const cards = Array.from(track.querySelectorAll(".food-card"));
+    if (!cards.length) return;
+    const center = track.getBoundingClientRect().left + track.clientWidth / 2;
+    let active = cards[0];
+    let best = Number.POSITIVE_INFINITY;
+    cards.forEach(function (cardElement) {
+      const rect = cardElement.getBoundingClientRect();
+      const distance = Math.abs(center - (rect.left + rect.width / 2));
+      if (distance < best) {
+        best = distance;
+        active = cardElement;
+      }
+    });
+    cards.forEach(function (cardElement) {
+      cardElement.classList.toggle("is-active", cardElement === active);
+    });
+  }
+
+  function slideTrack(track, direction) {
+    const maxScroll = track.scrollWidth - track.clientWidth;
+    if (maxScroll <= 8) return;
+    const step = Math.min(380, track.clientWidth * 0.8) * direction;
+    let next = track.scrollLeft + step;
+    if (next >= maxScroll - 12) next = 0;
+    if (next < 0) next = maxScroll;
+    track.scrollTo({ left: next, behavior: "smooth" });
+    setTimeout(function () { updateActiveCard(track); }, 620);
+  }
+
+  function startAutoSlide() {
+    clearInterval(autoSlideTimer);
+  }
+
+  document.addEventListener("mouseenter", function (event) {
+    if (event.target.closest(".wave-menu-track")) clearInterval(autoSlideTimer);
+  }, true);
+
+  document.addEventListener("mouseleave", function (event) {
+    if (event.target.closest(".wave-menu-track")) startAutoSlide();
+  }, true);
+
+  window.addEventListener("resize", function () {
+    document.querySelectorAll(".wave-menu-track").forEach(function (track) {
+      updateTrackAlignment(track);
+      updateActiveCard(track);
     });
   });
-  if (menuSearch) menuSearch.addEventListener("input", render);
+
+  if (menuSearch) menuSearch.addEventListener("input", renderMenu);
 
   const lightbox = document.createElement("div");
   lightbox.className = "image-lightbox";
@@ -146,11 +555,20 @@ document.addEventListener("DOMContentLoaded", function () {
     lightbox.classList.add("active");
   }
 
+  document.addEventListener("click", function (event) {
+    const target = event.target;
+    if (target.closest(".food-img")) {
+      const image = target.closest(".food-img");
+      openLightbox(image.src, image.alt);
+    }
+  });
+
   const closeButton = document.getElementById("lightboxClose");
   if (closeButton) closeButton.addEventListener("click", function () { lightbox.classList.remove("active"); });
   lightbox.addEventListener("click", function (event) {
     if (event.target === lightbox) lightbox.classList.remove("active");
   });
 
-  render();
+  renderTabs();
+  renderMenu();
 });
