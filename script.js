@@ -74,24 +74,18 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   const categoryLabels = {
-    vorspeisen: "Vorspeisen",
+    starters: "Vorspeisen & Nachtisch",
+    sparmenu: "Sparmenü",
     hauptgerichte: "Hauptgerichte",
-    nachtisch: "Nachtisch",
     box: "Box To Go",
-    sushi_maki: "Sushi Maki",
-    sushi_roll: "Sushi Spezial Roll",
-    baked_sushi: "Gebackene Sushi Roll",
-    sushi_menus: "Sushi Menüs",
-    extra_saucen: "Extra Saucen",
-    extra: "Extra",
-    milchtee: "Milchtee",
-    bubble_tea: "Bubble Tea",
-    frappe: "Frappé",
-    toppings: "Toppings"
+    sushi: "Sushi",
+    drinks: "Getränke",
+    extras: "Extras"
   };
 
   const categoryTags = {
     vorspeisen: "Starter",
+    sparmenu: "Menü",
     hauptgerichte: "Wok",
     nachtisch: "Dessert",
     box: "To Go",
@@ -104,8 +98,16 @@ document.addEventListener("DOMContentLoaded", function () {
     milchtee: "Milchtee",
     bubble_tea: "Eistee",
     frappe: "Frappé",
+    getraenke: "Getränk",
     toppings: "+1€"
   };
+
+  function displayCategory(cat) {
+    if (["vorspeisen", "nachtisch"].includes(cat)) return "starters";
+    if (["sushi_maki", "sushi_roll", "baked_sushi", "sushi_menus"].includes(cat)) return "sushi";
+    if (["extra_saucen", "extra", "toppings"].includes(cat)) return "extras";
+    return ["milchtee", "bubble_tea", "frappe", "getraenke"].includes(cat) ? "drinks" : cat;
+  }
 
   function imageFor(id, text, name, desc) {
     const hash = Array.from(id).reduce(function (sum, char) {
@@ -145,13 +147,21 @@ document.addEventListener("DOMContentLoaded", function () {
       "bubble_tea-13": "mango fruit iced tea bubble tea cup real photo",
       "frappe-14": "strawberry frappe bubble tea cup whipped ice real photo",
       "frappe-15": "mango frappe bubble tea cup whipped ice real photo",
-      "toppings-T8": "cherry popping boba bubble tea topping red pearls close up"
+      "getraenke-G2": "cold coca cola light glass bottle with ice glass real product photo",
+      "getraenke-G5": "premium still mineral water glass bottle with water glass real product photo",
+      "getraenke-G6": "Durstloescher orange drink carton real product photo clean background",
+      "getraenke-G7": "red bull energy drink can with ice glass real product photo",
+      "getraenke-G12": "guava juice in glass with fresh guava fruit real photo",
+      "toppings-T2": "mango popping boba pearls in small clear bowl bubble tea topping real photo",
+      "toppings-T8": "cherry popping boba bubble tea topping red pearls close up",
+      "toppings-T11": "https://www.kosta.at/wp-content/uploads/2020/06/CFB_2550-2-600x399.jpg"
     };
     const imageHints = {
       vorspeisen: "asian appetizer close up plated dish",
       hauptgerichte: "asian wok dish close up plated meal",
       nachtisch: "asian dessert close up plated",
       box: "asian takeaway box noodles rice close up",
+      sparmenu: "asian lunch combo menu noodles rice drink close up",
       extra_saucen: "asian sauce side dish bowl close up",
       sushi_maki: "sushi maki rolls close up",
       sushi_roll: "inside out sushi roll close up",
@@ -161,9 +171,13 @@ document.addEventListener("DOMContentLoaded", function () {
       milchtee: "bubble milk tea cup close up",
       bubble_tea: "fruit iced bubble tea cup close up",
       frappe: "fruit frappe bubble tea cup close up",
+      getraenke: "soft drink bottle glass close up",
       toppings: "bubble tea popping boba topping close up"
     };
-    const dishQuery = [imageOverrides[id] || text, name, desc, imageHints[category], "restaurant food real photo centered full dish"]
+    const override = imageOverrides[id];
+    if (override && /^https?:\/\//.test(override)) return override;
+
+    const dishQuery = [override || text, name, desc, imageHints[category], "restaurant food real photo centered full dish"]
       .filter(Boolean)
       .join(" ")
       .replace(/\s+/g, " ")
@@ -180,6 +194,11 @@ document.addEventListener("DOMContentLoaded", function () {
     item("vorspeisen", "V4", "Thai-Suppe 🌶", "mit Kokosmilch, Garnelen, Champignon und Gemüse", "5,90 €", "thai coconut shrimp soup"),
     item("vorspeisen", "V5", "Wantan-Suppe", "mit Champignon und Sojasprossen", "4,90 €", "wonton soup asian"),
     item("vorspeisen", "V6", "Gemüsesuppe 🌿", "", "3,90 €", "vegetable soup asian"),
+
+    item("sparmenu", "S1", "Sparmenü 1", "Peking Suppe oder Softdrink 0,3L", "13,90 €", "crispy duck fried noodles lunch menu soft drink", null, ["Gebr. Nudeln mit knuspriger Ente und Gemüse"]),
+    item("sparmenu", "S2", "Sparmenü 2", "Peking Suppe oder Softdrink 0,3L", "10,90 €", "chicken fried noodles lunch menu soft drink", null, ["Gebr. Nudeln mit Hühnerfleisch und Gemüse"]),
+    item("sparmenu", "S3", "Sparmenü 3", "Peking Suppe oder Softdrink 0,3L", "12,90 €", "baked chicken fried noodles lunch menu soft drink", null, ["Gebr. Nudeln mit gebackenem Hühnerfleisch und Gemüse"]),
+    item("sparmenu", "S4", "Gebackenes Hühnerfleisch Menü", "mit Reis, Gemüse und Sauce nach Wahl", "11,90 €", "baked chicken rice vegetables sauce lunch menu"),
 
     item("hauptgerichte", "M1", "Gebratene Nudeln mit...", "", null, "fried noodles asian wok", [
       opt("a", "Sojasprossen, Ei", "6,90 €"),
@@ -214,7 +233,6 @@ document.addEventListener("DOMContentLoaded", function () {
       opt("a", "mit gebackenem Hühnerfleisch", "10,90 €"),
       opt("b", "mit knuspriger Ente", "12,90 €")
     ]),
-    item("hauptgerichte", "M12", "Sparmenü", "", "11,90 €", "asian lunch menu spring rolls noodles softdrink", null, ["Frühlingsrollen", "Gebr. Nudeln mit Hühnerfleisch", "1x Softdrink"]),
     item("hauptgerichte", "M13", "Gemüsepfanne 🌿", "mit Soße nach Wahl, dazu Reis", "9,90 €", "vegetable stir fry rice asian", sauceOptions(["Süß-saure Soße", "Pikante Soße 🌶", "Currysoße 🌶"], "9,90 €")),
     item("hauptgerichte", "M14", "Bami-Goreng", "Gebratene Nudeln mit Hühnerfleisch, Krabben, Sojasprossen, Ei", "10,90 €", "bami goreng fried noodles"),
     item("hauptgerichte", "M15", "Nasi-Goreng", "Gebratener Reis mit Hühnerfleisch, Krabben, Sojasprossen, Ei", "10,90 €", "nasi goreng fried rice"),
@@ -291,6 +309,19 @@ document.addEventListener("DOMContentLoaded", function () {
     drink("frappe", "14", "Erdbeere Frappé", "strawberry frappe bubble tea", [["700ml", "5,50 €"], ["500ml", "5,00 €"]]),
     drink("frappe", "15", "Mango Frappé", "mango frappe bubble tea", [["700ml", "5,50 €"], ["500ml", "5,00 €"]]),
 
+    beverage("G1", "Cola", "coca cola glass bottle soft drink", [["Haus 0,33L", "2,50 €"], ["Außer Haus 0,33L", "2,90 €"]]),
+    beverage("G2", "Cola Light", "cola light glass bottle soft drink", [["Haus 0,33L", "2,50 €"], ["Außer Haus 0,33L", "2,90 €"]]),
+    beverage("G3", "Fanta", "fanta orange soft drink bottle", [["Haus 0,33L", "2,50 €"], ["Außer Haus 0,33L", "2,90 €"], ["Außer Haus 1L", "3,90 €"]]),
+    beverage("G4", "Sprite", "sprite lemon lime soft drink bottle", [["Haus 0,33L", "2,50 €"], ["Außer Haus 0,33L", "2,90 €"], ["Außer Haus 1L", "3,90 €"]]),
+    beverage("G5", "Stilles Wasser", "still water bottle glass", [["Haus 0,33L", "1,90 €"], ["Außer Haus 1L", "3,90 €"]]),
+    beverage("G6", "Durstlöscher", "durstloescher orange iced tea drink carton", [["Haus 0,5L", "2,00 €"], ["Außer Haus 0,5L", "2,50 €"]]),
+    beverage("G7", "Red Bull", "red bull can energy drink", [["Haus", "2,90 €"], ["Außer Haus", "3,90 €"]]),
+    beverage("G8", "Kaffee", "hot coffee cup", [["Haus", "1,90 €"]]),
+    beverage("G9", "Apfelschorle / Tafelwasser", "apple spritzer sparkling water bottle drink", [["Haus 0,33L", "2,50 €"]]),
+    beverage("G10", "Mangosaft", "mango juice glass bottle", [["Haus 250ml", "2,90 €"], ["Außer Haus 250ml", "2,90 €"]]),
+    beverage("G11", "Lycheesaft", "lychee juice glass bottle", [["Haus 250ml", "2,90 €"], ["Außer Haus 250ml", "2,90 €"]]),
+    beverage("G12", "Guavensaft", "guava juice glass bottle", [["Haus 250ml", "2,90 €"], ["Außer Haus 250ml", "2,90 €"]]),
+
     topping("T1", "Erdbeere Boba"),
     topping("T2", "Mango Boba"),
     topping("T3", "Pfirsich Boba"),
@@ -303,6 +334,94 @@ document.addEventListener("DOMContentLoaded", function () {
     topping("T10", "Hantien Perlen"),
     topping("T11", "Früchte Gelee")
   ];
+
+  const allergenLabels = {
+    "vorspeisen-V1": "3",
+    "vorspeisen-V2": "3",
+    "vorspeisen-V3": "1,A",
+    "vorspeisen-V4": "3,A,C,F",
+    "vorspeisen-V5": "3,E,F",
+    "vorspeisen-V6": "3",
+    "sparmenu-S1": "3,A,C,F",
+    "sparmenu-S2": "3,A,C,F",
+    "sparmenu-S3": "3,A,C,F",
+    "sparmenu-S4": "3,A",
+    "hauptgerichte-M1": "3,E,F",
+    "hauptgerichte-M2": "3,E,F",
+    "hauptgerichte-M3": "3,A,C,F",
+    "hauptgerichte-M4": "3,A",
+    "hauptgerichte-M5": "3,E,F",
+    "hauptgerichte-M6": "3,F",
+    "hauptgerichte-M7": "3,A,C,F",
+    "hauptgerichte-M8": "3",
+    "hauptgerichte-M9": "3",
+    "hauptgerichte-M10": "3,D",
+    "hauptgerichte-M11": "3,F",
+    "hauptgerichte-M13": "3,F",
+    "hauptgerichte-M14": "3,E,F",
+    "hauptgerichte-M15": "3,E,F",
+    "hauptgerichte-M16": "3",
+    "hauptgerichte-M17": "3,A",
+    "nachtisch-N1": "3",
+    "box-B1": "3,E,F",
+    "box-B2": "3,A,F",
+    "box-B3": "3,E,F",
+    "box-B4": "3,E,F",
+    "box-B5": "3,E,F",
+    "box-B6": "3,E,F",
+    "box-B7": "3,E,F",
+    "box-B8": "3,A,C,F",
+    "sushi_maki-M1": "A",
+    "sushi_maki-M2": "A",
+    "sushi_maki-M3": "A",
+    "sushi_maki-M4": "A",
+    "sushi_maki-M5": "A,D",
+    "sushi_maki-M6": "A,B",
+    "sushi_roll-R1": "A,D,G",
+    "sushi_roll-R2": "A,D,G",
+    "sushi_roll-R3": "A,D",
+    "sushi_roll-R4": "A,B",
+    "sushi_roll-R5": "A,B",
+    "sushi_roll-R6": "A,B",
+    "baked_sushi-B1": "A,C,F",
+    "baked_sushi-B2": "A,D,G",
+    "baked_sushi-B3": "A,F,G",
+    "baked_sushi-B4": "A,F,G",
+    "sushi_menus-S1": "A",
+    "sushi_menus-S2": "A,D",
+    "sushi_menus-S3": "A,B",
+    "sushi_menus-S4": "A",
+    "sushi_menus-S5": "A,D",
+    "sushi_menus-S6": "A,B,D",
+    "sushi_menus-S7": "A,D",
+    "sushi_menus-S8": "A",
+    "sushi_menus-S9": "A,B,D",
+    "sushi_menus-S10": "A,B,D",
+    "sushi_menus-S11": "A",
+    "milchtee-1": "1,A",
+    "milchtee-2": "1,A",
+    "milchtee-3": "1,A",
+    "milchtee-4": "1,B",
+    "milchtee-5": "1,A",
+    "milchtee-6": "1,A",
+    "milchtee-7": "1,A",
+    "milchtee-8": "1,A",
+    "milchtee-9": "1,A",
+    "bubble_tea-10": "1",
+    "bubble_tea-11": "1",
+    "bubble_tea-12": "1",
+    "bubble_tea-13": "1",
+    "frappe-14": "1,A",
+    "frappe-15": "1,A",
+    "getraenke-G1": "1,5",
+    "getraenke-G2": "1,5,6",
+    "getraenke-G3": "1,2",
+    "getraenke-G4": "1"
+  };
+
+  menuItems.forEach(function (item) {
+    item.allergens = allergenLabels[item.id] || "";
+  });
 
   function item(cat, code, name, desc, price, imageText, options, bullets) {
     return {
@@ -348,6 +467,24 @@ document.addEventListener("DOMContentLoaded", function () {
       }),
       options: [],
       bullets: ["Toppings: Boba, Tapioka Perlen, Hantien Perlen oder Früchte Gelee (+1€)"]
+    };
+  }
+
+  function beverage(code, name, imageText, sizes) {
+    return {
+      id: "getraenke-" + code,
+      cat: "getraenke",
+      code,
+      name,
+      desc: "",
+      price: null,
+      tag: categoryTags.getraenke,
+      img: imageFor("getraenke-" + code, imageText, name, "drinks in house take away"),
+      sizes: sizes.map(function (size) {
+        return { label: size[0], price: size[1] };
+      }),
+      options: [],
+      bullets: []
     };
   }
 
@@ -401,7 +538,9 @@ document.addEventListener("DOMContentLoaded", function () {
         <div class="food-content">
           <div class="food-heading">
             <span class="food-code">${escapeHtml(item.code)}</span>
-            <h3 class="food-name">${escapeHtml(item.name)}</h3>
+            <div class="food-title">
+              <h3 class="food-name">${escapeHtml(item.name)}${item.allergens ? ` <sup class="food-allergens">${escapeHtml(item.allergens)}</sup>` : ""}</h3>
+            </div>
           </div>
           ${item.desc ? `<p class="food-desc">${escapeHtml(item.desc)}</p>` : ""}
           ${optionsHtml(item)}
@@ -430,13 +569,14 @@ document.addEventListener("DOMContentLoaded", function () {
       const options = (item.options || []).map(function (option) { return option.label + " " + option.text + " " + option.price; }).join(" ");
       const sizes = (item.sizes || []).map(function (size) { return size.label + " " + size.price; }).join(" ");
       const bullets = (item.bullets || []).join(" ");
-      const haystack = `${item.code} ${item.name} ${item.desc} ${item.price || ""} ${item.tag} ${options} ${sizes} ${bullets}`.toLowerCase();
-      return (currentFilter === "all" || item.cat === currentFilter) && haystack.includes(query);
+      const haystack = `${item.code} ${item.name} ${item.desc} ${item.allergens || ""} ${item.price || ""} ${item.tag} ${options} ${sizes} ${bullets}`.toLowerCase();
+      const displayCat = displayCategory(item.cat);
+      return (currentFilter === "all" || displayCat === currentFilter) && haystack.includes(query);
     });
 
     const cats = currentFilter === "all" ? Object.keys(categoryLabels) : [currentFilter];
     menuRows.innerHTML = cats.map(function (cat) {
-      const rowItems = filtered.filter(function (item) { return item.cat === cat; });
+      const rowItems = filtered.filter(function (item) { return displayCategory(item.cat) === cat; });
       if (!rowItems.length) return "";
       return `
         <div class="menu-row-block ${rowItems.length <= 3 ? "is-compact" : ""}" data-category="${cat}">

@@ -736,15 +736,30 @@ h1 {
   line-height: 1;
 }
 
+.food-title {
+  min-width: 0;
+  display: block;
+}
+
 .food-name {
   color: #573624;
   font-family: "Cormorant Garamond", serif;
   font-size: var(--menu-title-size);
+  line-height: 1.08;
+  margin: 0;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.food-allergens {
+  color: #211814;
+  font-family: "Montserrat", sans-serif;
+  font-size: 11px;
+  font-weight: 900;
   line-height: 1;
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  letter-spacing: 0;
+  margin-left: 3px;
+  vertical-align: super;
 }
 
 .food-desc {
@@ -1252,7 +1267,7 @@ footer {
 @media (max-width: 520px) {
   .menu-section {
     --menu-card-gap: 12px;
-    --menu-title-size: clamp(21px, 5.8vw, 25px);
+    --menu-title-size: clamp(20px, 5.2vw, 24px);
     --menu-body-size: 12px;
   }
 
@@ -1262,12 +1277,12 @@ footer {
   }
 
   .food-card {
-    grid-template-columns: 112px minmax(0, 1fr);
+    grid-template-columns: 96px minmax(0, 1fr);
     border-radius: 22px;
   }
 
   .food-img-wrap {
-    min-height: 178px;
+    min-height: 160px;
     padding: 7px;
   }
 
