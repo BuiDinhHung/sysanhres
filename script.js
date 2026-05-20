@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
     bubble_tea: "Eistee",
     frappe: "Frappé",
     getraenke: "Getränk",
-    toppings: "+1€"
+    toppings: "Topping"
   };
 
   function displayCategory(cat) {
@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
     item("hauptgerichte", "M13", "Gemüsepfanne 🌿", "mit Soße nach Wahl, dazu Reis", "9,90 €", "vegetable stir fry rice asian", sauceOptions(["Süß-saure Soße", "Pikante Soße 🌶", "Currysoße 🌶"], "9,90 €")),
     item("hauptgerichte", "M14", "Bami-Goreng", "Gebratene Nudeln mit Hühnerfleisch, Krabben, Sojasprossen, Ei", "10,90 €", "bami goreng fried noodles"),
     item("hauptgerichte", "M15", "Nasi-Goreng", "Gebratener Reis mit Hühnerfleisch, Krabben, Sojasprossen, Ei", "10,90 €", "nasi goreng fried rice"),
-    item("hauptgerichte", "M16", "Knusprige Ente", "mit Reis, Gemüse und Soße nach Wahl...", "12,90 €", "crispy duck mango sauce rice asian", sauceOptions(["Süß-saure Soße", "Chop-Suey Soße", "Curry 🌶 oder Erdnusssoße", "Mangosoße"], "12,90 €")),
+    item("hauptgerichte", "M16", "Knusprige Ente", "mit gebratenen Nudeln, Gemüse und Soße nach Wahl...", "12,90 €", "crispy duck fried noodles vegetables asian", sauceOptions(["Süß-saure Soße", "Chop-Suey Soße", "Curry¹ 🌶 oder Erdnusssoße", "Mangosoße¹"], "12,90 €")),
     item("hauptgerichte", "M17", "Gebackenes Hühnerfleisch", "mit Reis und Soße nach Wahl...", "11,90 €", "baked chicken rice asian", sauceOptions(["Süß-saure Soße", "Chop-Suey Soße", "Curry 🌶 oder Erdnusssoße", "Mangosoße"], "11,90 €")),
 
     item("nachtisch", "N1", "Gebackene Banane (5 Stück)", "mit Honig", "3,50 €", "fried banana honey dessert"),
@@ -309,10 +309,10 @@ document.addEventListener("DOMContentLoaded", function () {
     drink("frappe", "14", "Erdbeere Frappé", "strawberry frappe bubble tea", [["700ml", "5,50 €"], ["500ml", "5,00 €"]]),
     drink("frappe", "15", "Mango Frappé", "mango frappe bubble tea", [["700ml", "5,50 €"], ["500ml", "5,00 €"]]),
 
-    beverage("G1", "Cola", "coca cola glass bottle soft drink", [["Haus 0,33L", "2,50 €"], ["Außer Haus 0,33L", "2,90 €"]]),
-    beverage("G2", "Cola Light", "cola light glass bottle soft drink", [["Haus 0,33L", "2,50 €"], ["Außer Haus 0,33L", "2,90 €"]]),
-    beverage("G3", "Fanta", "fanta orange soft drink bottle", [["Haus 0,33L", "2,50 €"], ["Außer Haus 0,33L", "2,90 €"], ["Außer Haus 1L", "3,90 €"]]),
-    beverage("G4", "Sprite", "sprite lemon lime soft drink bottle", [["Haus 0,33L", "2,50 €"], ["Außer Haus 0,33L", "2,90 €"], ["Außer Haus 1L", "3,90 €"]]),
+    beverage("G1", "Cola", "coca cola glass bottle soft drink", [["Haus 0,33L", "2,50 €"], ["Außer Haus 0,33L", "2,90 €"], ["Außer Haus 1L", "4,90 €"]]),
+    beverage("G2", "Cola Zero", "cola zero glass bottle soft drink", [["Haus 0,33L", "2,50 €"], ["Außer Haus 0,33L", "2,90 €"], ["Außer Haus 1L", "4,90 €"]]),
+    beverage("G3", "Fanta", "fanta orange soft drink bottle", [["Haus 0,33L", "2,50 €"], ["Außer Haus 0,33L", "2,90 €"], ["Außer Haus 1L", "4,90 €"]]),
+    beverage("G4", "Sprite", "sprite lemon lime soft drink bottle", [["Haus 0,33L", "2,50 €"], ["Außer Haus 0,33L", "2,90 €"], ["Außer Haus 1L", "4,90 €"]]),
     beverage("G5", "Stilles Wasser", "still water bottle glass", [["Haus 0,33L", "1,90 €"], ["Außer Haus 1L", "3,90 €"]]),
     beverage("G6", "Durstlöscher", "durstloescher orange iced tea drink carton", [["Haus 0,5L", "2,00 €"], ["Außer Haus 0,5L", "2,50 €"]]),
     beverage("G7", "Red Bull", "red bull can energy drink", [["Haus", "2,90 €"], ["Außer Haus", "3,90 €"]]),
@@ -458,7 +458,7 @@ document.addEventListener("DOMContentLoaded", function () {
       cat,
       code,
       name,
-      desc: "Mit Topping nach Wahl (+1€)",
+      desc: "Mit Topping nach Wahl inklusive. Extra Topping +1€",
       price: null,
       tag: categoryTags[cat],
       img: imageFor(cat + "-" + code, imageText, name, "bubble tea size 500ml 700ml"),
@@ -466,7 +466,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return { label: size[0], price: size[1] };
       }),
       options: [],
-      bullets: ["Toppings: Boba, Tapioka Perlen, Hantien Perlen oder Früchte Gelee (+1€)"]
+      bullets: ["Toppings: Boba, Tapioka Perlen, Hantien Perlen oder Früchte Gelee inklusive. Extra Topping +1€"]
     };
   }
 

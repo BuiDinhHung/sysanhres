@@ -489,6 +489,15 @@ h1 {
   font-size: 34px;
 }
 
+.service-section .info-card p {
+  margin: 0 0 10px;
+  line-height: 1.45;
+}
+
+.service-section .info-card p:last-child {
+  margin-bottom: 0;
+}
+
 .food-marquee {
   padding: 32px 0;
   overflow: hidden;
