@@ -32,9 +32,12 @@ document.addEventListener("DOMContentLoaded", function () {
   function updateMapFrame() {
     if (!mapFrame) return;
     const mapSrc = mapFrame.dataset.src;
-    if (window.matchMedia("(max-width: 820px)").matches) {
+    const shouldUseMobileMap = window.matchMedia("(max-width: 1050px), (pointer: coarse)").matches;
+    if (shouldUseMobileMap) {
       mapFrame.removeAttribute("src");
+      mapFrame.style.display = "none";
     } else if (mapSrc && mapFrame.getAttribute("src") !== mapSrc) {
+      mapFrame.style.display = "";
       mapFrame.setAttribute("src", mapSrc);
     }
   }

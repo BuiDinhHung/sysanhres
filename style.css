@@ -1091,6 +1091,14 @@ footer {
   .stats-section {
     grid-template-columns: 1fr;
   }
+
+  .map iframe {
+    display: none;
+  }
+
+  .map-mobile-link {
+    display: block;
+  }
 }
 
 @media (max-width: 820px) {
