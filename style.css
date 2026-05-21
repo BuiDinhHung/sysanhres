@@ -48,6 +48,12 @@ img {
   transition: opacity 0.45s ease, visibility 0.45s ease;
 }
 
+#loader.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 #loader span {
   font-family: "Cormorant Garamond", serif;
   font-size: clamp(44px, 8vw, 92px);
@@ -948,15 +954,21 @@ footer {
 .mobile-call {
   position: fixed;
   right: 18px;
-  bottom: 18px;
-  z-index: 90;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  z-index: 1001;
   display: none;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
   padding: 15px 20px;
   border-radius: 999px;
   background: var(--ink);
   color: #fff;
   font-weight: 800;
   box-shadow: 0 15px 32px rgba(31, 26, 23, 0.24);
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .image-lightbox {

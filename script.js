@@ -9,14 +9,14 @@ document.addEventListener("DOMContentLoaded", function () {
   let currentFilter = "all";
   let autoSlideTimer;
 
+  function hideLoader() {
+    if (loader) loader.classList.add("is-hidden");
+  }
+
   window.addEventListener("load", function () {
-    setTimeout(function () {
-      if (loader) {
-        loader.style.opacity = "0";
-        loader.style.visibility = "hidden";
-      }
-    }, 650);
+    setTimeout(hideLoader, 650);
   });
+  setTimeout(hideLoader, 1800);
 
   function updateScrollBar() {
     const current = document.documentElement.scrollTop || document.body.scrollTop;
