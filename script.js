@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const navToggle = document.querySelector(".nav-toggle");
   const menuRows = document.getElementById("menuRows");
   const menuSearch = document.getElementById("menuSearch");
-  const mapFrame = document.querySelector(".map iframe");
   let menuTabs = document.querySelectorAll(".menu-tab");
   let currentFilter = "all";
   let autoSlideTimer;
@@ -28,22 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   updateScrollBar();
   window.addEventListener("scroll", updateScrollBar, { passive: true });
-
-  function updateMapFrame() {
-    if (!mapFrame) return;
-    const mapSrc = mapFrame.dataset.src;
-    const shouldUseMobileMap = window.matchMedia("(max-width: 1050px), (pointer: coarse)").matches;
-    if (shouldUseMobileMap) {
-      mapFrame.removeAttribute("src");
-      mapFrame.style.display = "none";
-    } else if (mapSrc && mapFrame.getAttribute("src") !== mapSrc) {
-      mapFrame.style.display = "";
-      mapFrame.setAttribute("src", mapSrc);
-    }
-  }
-
-  updateMapFrame();
-  window.addEventListener("resize", updateMapFrame);
 
   if (navToggle && navbar) {
     navToggle.addEventListener("click", function () {
