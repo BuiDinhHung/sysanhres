@@ -1282,10 +1282,7 @@ footer {
   }
 
   .mobile-call {
-    right: 18px;
-    bottom: calc(92px + env(safe-area-inset-bottom, 0px));
-    display: inline-flex;
-    min-height: 48px;
+    display: none;
   }
 
 }
