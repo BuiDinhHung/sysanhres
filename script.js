@@ -44,22 +44,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  const mobileCall = document.querySelector(".mobile-call");
-  let lastCallTap = 0;
-
-  function triggerPhoneCall(event) {
-    if (!mobileCall) return;
-    const now = Date.now();
-    if (now - lastCallTap < 700) return;
-    lastCallTap = now;
-    event.preventDefault();
-    window.location.href = mobileCall.href;
-  }
-
-  if (mobileCall) {
-    mobileCall.addEventListener("click", triggerPhoneCall);
-    mobileCall.addEventListener("touchend", triggerPhoneCall, { passive: false });
-  }
 
   const revealObserver = new IntersectionObserver(function (entries) {
     entries.forEach(function (entry) {
