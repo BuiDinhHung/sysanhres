@@ -284,7 +284,7 @@ document.addEventListener("DOMContentLoaded", function () {
     sushiMenu("S5", "Sushi Menü 5", "17,90 €", ["2 Sake Nigiri", "8 Sake Maki", "8 Sake Inside-Out (Lachs ummantelt)"]),
     sushiMenu("S6", "Sushi Menü 6", "15,90 €", ["1 Ebi Nigiri", "1 Sake Nigiri", "8 Gurke Maki", "8 California Inside-Out (Lachs ummantelt)"]),
     sushiMenu("S7", "Sushi Menü 7", "19,90 €", ["8 Gurke Maki", "8 Sake Inside-Out (Lachs ummantelt)", "8 California Inside-Out (Lachs ummantelt)"]),
-    sushiMenu("S8", "Sushi Menü 8 (vegetarisch)", "13,90 €", ["8 Kappa Maki (Gurke)", "8 Mango Maki", "8 Inside-Out (Sesam ummantelt)"]),
+    sushiMenu("S8", "Sushi Menü 8 (vegetarisch)", "15,90 €", ["8 Kappa Maki (Gurke)", "8 Mango Maki", "8 Inside-Out (Sesam ummantelt)"]),
     sushiMenu("S9", "Sushi Menü 9", "25,90 €", ["2 Ebi Nigiri", "2 Sake Nigiri", "6 Baked Sake Rolls", "8 California Inside-Out (Sesam ummantelt)", "8 Kappa Maki"]),
     sushiMenu("S10", "Sushi Menü 10", "27,90 €", ["6 Baked Sake Rolls", "6 Baked Ebi Rolls", "6 Baked vegetarische Rolls"]),
     sushiMenu("S11", "Sushi Menü 11 (vegetarisch)", "22,90 €", ["6 Baked Rolls", "8 Vegetarisch Inside-Out (Sesam ummantelt)", "8 Kappa Maki", "8 Mango Maki"]),
